@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Genome info</title>
+</head>
+<body style="background-color: lightblue">
+<h1>Genomic information</h1>
+<h3>Page dedicated to the acquisition of information about the human and other vertebrates genome</h3>
+<h4>How to use:</h4>
+<ul>
+    <li>/listSpecies/:limit : Retrieves a list of all the available species in the database</li>
+    <ul>
+        <li>/:limit is an optional endpoint that indicates the maximum number of species to be shown</li>
+    </ul>
+    <p></p>
+    <li>/karyotype/:specie : Returns a list of the names (usually  numbers) of all the chromosomes of the selected specie</li>
+    <p></p>
+    <li>/chromosomeLenght/:specie/:chromo : Returns the Length of the chromosome named "chromo" of the given specie</li>
+</ul>
+</body>
+</html>
