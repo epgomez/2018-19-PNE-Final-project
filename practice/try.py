@@ -2,15 +2,13 @@ import socketserver, http.server, termcolor, requests,sys
 
 PORT_server = 8050
 server = 'http://rest.ensembl.org'
-ENDPOINTS = ['/info/species?', '/info/assembly']
+ENDPOINTS = ['/info/species?', '/info/assembly', '/overlap/region/human/7:140424943-140624564?feature=gene']
 headers = {"Content-Type": "application/json"}
 socketserver.TCPServer.allow_reuse_address = True
 
 
-specie = '/' + input('enter: ')
-chromo = '/' + input('chr: ')
-ext = ENDPOINTS[1] + specie + chromo +'?'
-print(server + ext + specie)
+ext = ENDPOINTS[2]
+print(server + ext)
 
 r = requests.get(server + ext, headers=headers)
 
@@ -19,4 +17,11 @@ if not r.ok:
     sys.exit()
 
 decoded = r.json()
-print(decoded)
+
+
+add = {}
+for i in range(len(decoded)):
+    add.update([(str(i), decoded[i]['external_name'])])
+
+print(add)
+

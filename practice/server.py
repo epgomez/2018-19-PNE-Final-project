@@ -2,7 +2,7 @@ import socketserver, http.server, termcolor, requests
 
 PORT_server = 8000
 server = 'http://rest.ensembl.org'
-ENDPOINTS = ['/info/species?', '/info/assembly']
+ENDPOINTS = ['/info/species?', '/info/assembly', '/overlap/region/human/{}:{}-{}?feature=gene']
 headers = {"Content-Type": "application/json"}
 socketserver.TCPServer.allow_reuse_address = True
 
@@ -55,17 +55,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                 resp = 200
                 specie = path.split('=')[1]
+
                 ext = ENDPOINTS[1] + '/' + specie + '?'
                 r = requests.get(server + ext, headers=headers)
                 decoded = r.json()
 
-                # In case that the specie's name is not on the database the client will recieve a response message indicating so
+                # In case that the specie's name is not on the database
+                # the client will recieve a response message indicating so
                 if r.ok:
                     add = ''
                     if decoded['karyotype'] == []:
                         add = "This specie's karyotype is not stored in the database"
                     else:
-                        # Add all the chromosomes to the list, avoiding the one called "MT", which is a parameter used by the database itself
+                        # Add all the chromosomes to the list, avoiding the one called "MT",
+                        # which is a parameter used by the database itself
                         for i, elem in enumerate(decoded['karyotype']):
                             if elem == 'MT':
                                 continue
@@ -99,8 +102,31 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Lenght of the {} chromosome of {}'.format(chromo, specie)
                 info = html.format(title, h, add)
 
+            elif 'geneList' in path:
+
+                resp = 200
+                chromo = path.split('&')[0].split('=')[1]
+                start = path.split('&')[1].split('=')[1]
+                end = path.split('&')[2].split('=')[1]
+
+                ext = ENDPOINTS[2].format(chromo, start, end)
+                r = requests.get(server + ext, headers=headers)
+                decoded = r.json()
+
+                if r.ok:
+                    add = ''
+                    for i in range(len(decoded)):
+                        add += 'Gene {}: {}\n'.format(i, decoded[i]['external_name'])
+                else:
+                    add = 'No slice found for location {}:{}-{}'.format(chromo, start, end)
+
+                title = 'Gene list'
+                h = 'Gene list of chromosome {} from {} to {}'.format(chromo, start, end)
+                info = html.format(title, h, add)
+
             else:
-                # In the case that I get an endpoint different from the ones I have decided to use, the client recieves an error message
+                # In the case that I get an endpoint different from the ones I have decided to use,
+                # the client recieves an error message
                 resp = 404
                 f = open('error.html', 'r')
                 info = f.read()
