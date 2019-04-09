@@ -1,4 +1,4 @@
-import socketserver, http.server, requests, termcolor
+import socketserver, http.server, requests, termcolor, sys
 from Seq import Seq
 
 PORT_server = 8000
