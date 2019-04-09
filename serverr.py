@@ -1,4 +1,5 @@
 import socketserver, http.server, requests, termcolor
+from Seq import Seq
 
 PORT_server = 8000
 server = 'http://rest.ensembl.org'
@@ -16,7 +17,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        print('Request: {}'.format(self.requestline))
+        termcolor.cprint(self.requestline, 'green')
         path = self.path
 
         try:
@@ -61,8 +62,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 ext = ENDPOINTS[1] + '/' + species + '?'
                 r = requests.get(server + ext, headers=headers)
 
-                # In case that the specie's name is not on the database
-                # the client will recieve a response message indicating so
+                # In case that the species' name is not on the database
+                # the client will receive a response message indicating so
                 if r.ok:
                     decoded = r.json()
                     add = ''
@@ -97,7 +98,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     decoded = r.json()
                     add = decoded['length']
                 else:
-                    add = 'Can not find chromosome {} of species {}'.format(chromo,species)
+                    add = 'Can not find chromosome "{}" of species "{}"'.format(chromo,species)
 
                 # Include the information in my future html file
                 title = 'Chromosome lenght'
@@ -107,13 +108,80 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             elif 'geneSeq' in path:
 
                 resp = 200
-                chromo = path.split('=')[1]
+                gene = path.split('=')[1]
 
-                ext = ENDPOINTS[3].format(chromo)
-                r1 = requests.get(server + ext, headers=headers)
+                ext = ENDPOINTS[3].format(gene)
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
 
-                if r1.ok:
+
                     decoded1 = r1.json()
+                    id = decoded1[0]['id']
+
+                    ext1 = ENDPOINTS[4].format(id)
+                    r2 = requests.get(server + ext1, headers=headers)
+
+                    decoded2 = r2.json()
+                    add = decoded2['seq']
+                except Exception:
+                    add = 'There is no "{}" gene stored in the database'.format(gene)
+
+                title = 'Gene {} seq'.format(gene)
+                h = 'Sequence of gene {}'.format(gene)
+                info = html.format(title, h, add)
+
+            elif 'geneInfo' in path:
+
+                resp = 200
+                gene = path.split('=')[1]
+
+                ext = ENDPOINTS[3].format(gene)
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
+                    decoded1 = r1.json()
+                    id = decoded1[0]['id']
+
+                    ext1 = ENDPOINTS[4].format(id)
+                    r2 = requests.get(server + ext1, headers=headers)
+                    decoded2 = r2.json()
+
+                    a = decoded2['desc'].split(':')
+                    chromo, start, end, id, length = a[2], a[3] ,a[4], decoded2['id'], decoded2['id']
+
+                    add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start,end,length,id,chromo)
+                except Exception:
+                    add = 'No gene called "{}" is stored in the database'.format(gene)
+
+                title = 'Gene {} inf'.format(gene)
+                h = 'Information about gene {}'.format(gene)
+                info = html.format(title, h, add)
+
+            elif 'geneCal' in path:
+
+                resp = 200
+                gene = path.split('=')[1]
+
+                ext = ENDPOINTS[3].format(gene)
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
+                    decoded1 = r1.json()
+                    id = decoded1[0]['id']
+
+                    ext1 = ENDPOINTS[4].format(id)
+                    r2 = requests.get(server + ext1, headers=headers)
+
+                    decoded2 = r2.json()
+                    seq = Seq(decoded2['seq'])
+                    length = seq.len()
+                    perc = [seq.perc('A'),seq.perc('C'),seq.perc('T'),seq.perc('G')]
+
+                    add = 'Length: {}\n  Percentage of A: {}\n  Percentage of C: {}\n  Percentage of T: {}\n  Percentage of G: {}'.format(length,perc[0],perc[1],perc[2],perc[3])
+                except Exception:
+                    add = 'No gene called "{}" is stored in the database'.format(gene)
+
+                title = 'Gene {} calc'.format(gene)
+                h = 'Calculations performed on gene {}'.format(gene)
+                info = html.format(title, h, add)
 
 
             elif 'geneList' in path:
@@ -138,6 +206,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Gene list of chromosome {} from {} to {}'.format(chromo, start, end)
                 info = html.format(title, h, add)
 
+            elif path == '':
+                pass
+
             else:
                 # In the case that I get an endpoint different from the ones I have decided to use,
                 # the client recieves an error message
@@ -148,7 +219,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         except:
             # If an exception is raised, I send back an error message
             resp = 404
-            f = open('error.html', 'r')
+            f = open('hugeerror.html', 'r')
             info = f.read()
 
         # Write the information in a response html file

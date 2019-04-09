@@ -98,7 +98,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     decoded = r.json()
                     add = decoded['length']
                 else:
-                    add = 'Can not find chromosome {} of species {}'.format(chromo,species)
+                    add = 'Can not find chromosome "{}" of species "{}"'.format(chromo,species)
 
                 # Include the information in my future html file
                 title = 'Chromosome lenght'
@@ -111,21 +111,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 gene = path.split('=')[1]
 
                 ext = ENDPOINTS[3].format(gene)
-                r1 = requests.get(server + ext, headers=headers)
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
 
-                if r1.ok:
+
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
 
                     ext1 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext1, headers=headers)
-                    if r2 == []:
-                        add = "Sorry, he haven't been able to obtain information about the {} gene".format(gene)
-                    else:
-                        decoded2 = r2.json()
-                        add = decoded2['seq']
-                else:
-                    add = 'No gene called {} is stored in the database'.format(gene)
+
+                    decoded2 = r2.json()
+                    add = decoded2['seq']
+                except Exception:
+                    add = 'There is no "{}" gene stored in the database'.format(gene)
 
                 title = 'Gene {} seq'.format(gene)
                 h = 'Sequence of gene {}'.format(gene)
@@ -137,25 +136,21 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 gene = path.split('=')[1]
 
                 ext = ENDPOINTS[3].format(gene)
-                r1 = requests.get(server + ext, headers=headers)
-
-                if r1.ok:
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
 
                     ext1 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext1, headers=headers)
+                    decoded2 = r2.json()
 
-                    if r2.ok:
-                        decoded2 = r2.json()
-                        a = decoded2['desc'].split(':')
-                        chromo, start, end, id, length = a[2], a[3] ,a[4], decoded2['id'], decoded2['id']
+                    a = decoded2['desc'].split(':')
+                    chromo, start, end, id, length = a[2], a[3] ,a[4], decoded2['id'], decoded2['id']
 
-                        add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start,end,length,id,chromo)
-                    else:
-                        add = "Sorry, he haven't been able to obtain the information of the {} gene".format(gene)
-                else:
-                    add = 'No gene called {} is stored in the database'.format(gene)
+                    add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start,end,length,id,chromo)
+                except Exception:
+                    add = 'No gene called "{}" is stored in the database'.format(gene)
 
                 title = 'Gene {} inf'.format(gene)
                 h = 'Information about gene {}'.format(gene)
@@ -167,26 +162,22 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 gene = path.split('=')[1]
 
                 ext = ENDPOINTS[3].format(gene)
-                r1 = requests.get(server + ext, headers=headers)
-
-                if r1.ok:
+                try:
+                    r1 = requests.get(server + ext, headers=headers)
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
 
                     ext1 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext1, headers=headers)
 
-                    if r2.ok:
-                        decoded2 = r2.json()
-                        seq = Seq(decoded2['seq'])
-                        length = seq.len()
-                        perc = [seq.perc('A'),seq.perc('C'),seq.perc('T'),seq.perc('G')]
+                    decoded2 = r2.json()
+                    seq = Seq(decoded2['seq'])
+                    length = seq.len()
+                    perc = [seq.perc('A'),seq.perc('C'),seq.perc('T'),seq.perc('G')]
 
-                        add = 'Length: {}\n  Percentage of A: {}\n  Percentage of C: {}\n  Percentage of T: {}\n  Percentage of G: {}'.format(length,perc[0],perc[1],perc[2],perc[3])
-                    else:
-                        add = "Sorry, he haven't been able to obtain the information of the {} gene".format(gene)
-                else:
-                    add = 'No gene called {} is stored in the database'.format(gene)
+                    add = 'Length: {}\n  Percentage of A: {}\n  Percentage of C: {}\n  Percentage of T: {}\n  Percentage of G: {}'.format(length,perc[0],perc[1],perc[2],perc[3])
+                except Exception:
+                    add = 'No gene called "{}" is stored in the database'.format(gene)
 
                 title = 'Gene {} calc'.format(gene)
                 h = 'Calculations performed on gene {}'.format(gene)
