@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>Genome info</title>
+</head>
+<body style="background-color: lightblue">
+<h5>Final project  -  Eloy Pérez Gómez</h5>
+<h1>Genomic information</h1>
+<h3>Page dedicated to the acquisition of information about the human and other vertebrates genome</h3>
+<h4>Options:</h4>
+<ul>
+    <li>List of all the availables species on the database</li>
+    <form action="listSpecies" method="get">
+     You can restrict the lenght of the list:  <input type="number" name="limit" min="0" max="200">
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Information about the karyotype of a species</li>
+    <form action="karyotype" method="get">
+        Species desired:  <input type="text" name="specie">
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Length of a specific chromosome</li>
+    <br>Species and chromosome desired:</br>
+    <form action="chromosomeLength" method="get">
+        Species:<input type="text" name="specie">
+        Chromosome: <input type="text" name="chromo">
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Sequence of a human gene</li>
+    <form action="geneSeq" method="get">
+        Gene name: <input type="text" name="gene">
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Information about a human gene</li>
+    <form action="geneInfo" method="get">
+        Gene name: <input type="text" name="gene">
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Calculations on a human gene</li>
+    <form action="geneCal" method="get">
+        Gene name: <input type="text" name="gene">
+    <input type="submit"/>
+    </form>
+
+
+
+    <p></p>
+    <li>List of the genes of a specific region of the human genome</li>
+    <form action="geneList" method="get">
+        Chromosome: <input type="text" name="chromo">
+        Start point: <input type="number" name="start">
+        End point: <input type="number" name="end">
+    <input type="submit"/>
+    </form>
+</ul>
+
+
+</body>
+</html>
