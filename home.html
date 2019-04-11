@@ -4,12 +4,22 @@
     <title>Genome info</title>
     <style>
         table, th, td {
-        background-color: green
+        background-color: ;
+        font-family: monospace;
+        font-size: 12px
+        }
+        form, h1, h3, h4, h5 {
+        color: white
+        }
+        li {
+        font-size: 18px;
+        color: white
+        }
     </style>
 </head>
-<body style="background-color: lightblue">
+<body style="background-color: navy ">
 <h5>Final project  -  Eloy Perez Gomez</h5>
-<h1>Genomic information</h1>
+<h1 style="color: white">Genomic information</h1>
 <h3>Page dedicated to the acquisition of information about the human and other vertebrates genome</h3>
 <h4>Options:</h4>
 <ul>
@@ -24,17 +34,17 @@
     <li>Information about the karyotype of a species</li>
     <form action="karyotype" method="get">
         Species desired:  <input type="text" name="specie">
-             <pre>click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+             <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>
     <p></p>
     <li>Length of a specific chromosome</li>
-    <br>Species and chromosome desired:</br>
-    <form action="chromosomeLength" method="get">
+        <form action="chromosomeLength" method="get">
+            <br>Species and chromosome desired:</br>
         Species:<input type="text" name="specie">
         Chromosome: <input type="text" name="chromo">
-             <pre>click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>
@@ -42,7 +52,7 @@
     <li>Sequence of a human gene</li>
     <form action="geneSeq" method="get">
         Gene name: <input type="text" name="gene">
-             <pre style="">click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>
@@ -50,7 +60,7 @@
     <li>Information about a human gene</li>
     <form action="geneInfo" method="get">
         Gene name: <input type="text" name="gene">
-        <pre>click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>
@@ -58,7 +68,7 @@
     <li>Calculations on a human gene</li>
     <form action="geneCal" method="get">
         Gene name: <input type="text" name="gene">
-                <pre>click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>
@@ -68,7 +78,7 @@
         Chromosome: <input type="text" name="chromo">
         Start point: <input type="number" name="start">
         End point: <input type="number" name="end">
-                    <pre>click if you want the response in .json format <input type="checkbox" name="json" value="1"></pre>
+            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
     <input type="submit"/>
     </form>

@@ -3,8 +3,10 @@ from Seq import Seq
 
 PORT_server = 8000
 server = 'http://rest.ensembl.org'
-ENDPOINTS = ['/info/species?', '/info/assembly', '/overlap/region/human/{}:{}-{}?feature=gene','/xrefs/symbol/homo_sapiens/{}', '/sequence/id/{}?expand=1']
+ENDPOINTS = ['/info/species?', '/info/assembly', '/overlap/region/human/{}:{}-{}?feature=gene',
+             '/xrefs/symbol/homo_sapiens/{}', '/sequence/id/{}?expand=1']
 headers = {"Content-Type": "application/json"}
+
 socketserver.TCPServer.allow_reuse_address = True
 
 # this is the future html file that will be sent to the client
@@ -12,6 +14,7 @@ socketserver.TCPServer.allow_reuse_address = True
 
 
 html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{}</title></head><body><h3>{}</h3><a href="/">Main page</a><pre>{}</pre><a href="/">Main page</a></body></html>'
+
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
@@ -50,12 +53,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 # Add the common and the scientific name of all the species to the list
                 for i in range(int(limit)):
                     # I add the information in form of a string in case the user wants it like that and in form of a dictionary if the user wants a json
-                    add += 'Scientific name: {} \nCommon name: {}\n\n'.format(decoded['species'][i]['name'], decoded['species'][i]['common_name'])
-                    info_dict.update([(str(i), {'common_name': decoded['species'][i]['common_name'], 'scientific_name': decoded['species'][i]['name']})])
+                    add += 'Scientific name: {} \nCommon name: {}\n\n'.format(decoded['species'][i]['name'],
+                                                                              decoded['species'][i]['common_name'])
+                    common = decoded['species'][i]['common_name']
+                    # If there is a "'" character in the common name of an species, this would make the later replacement of "'" by '"'
+                    # introduce an extra " that would make the json file impossible for the client to read, so if I detect one I skip it
+                    if "'" in common:
+                        common = common.replace("'", '')
+                    info_dict.update(
+                        [(str(i), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
 
-                info_dict = str(info_dict).replace("'",'"')
-                print(str(info_dict).replace("'",'"')[870:])
-
+                info_dict = str(info_dict).replace("'", '"')
                 # The title of the html file is different in each case
                 title = 'Species list'
                 h = 'List of all the available species'
@@ -83,19 +91,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                     if not decoded['karyotype']:
                         add = "This species' karyotype is not stored in the database"
+                        info_dict.update([('error', 'This species karyotype is not stored in the database')])
                     else:
                         # Add all the chromosomes to the list, avoiding the one called "MT",
                         # which is a parameter used by the database itself
                         for i, elem in enumerate(decoded['karyotype']):
                             if elem == 'MT':
                                 continue
-                            add += 'Chromosome number {}: {}\n'.format(str(i+1), elem)
-                            info_dict.update([(str(i),elem)])
+                            add += 'Chromosome number {}: {}\n'.format(str(i + 1), elem)
+                            info_dict.update([(str(i), elem)])
                 else:
                     add = 'Can not find internal name for species "{}"'.format(species)
-                    info_dict.update([('error','Can not find internal name for species "{}"'.format(species))])
+                    info_dict.update([('error', 'Can not find internal name for species {}'.format(species))])
 
-                info_dict = str(info_dict).replace("'",'"')
+                info_dict = str(info_dict).replace("'", '"')
 
                 # Like before, I include the title myself
                 title = 'Karyotype'
@@ -113,19 +122,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     species = path.split('&')[0].split('=')[1]
                     chromo = path.split('&')[1].split('=')[1]
                 # Process the request
-                ext = ENDPOINTS[1] + '/'+ species + '/'+ chromo + '?'
-                r = requests.get(server + ext , headers=headers)
+                ext = ENDPOINTS[1] + '/' + species + '/' + chromo + '?'
+                r = requests.get(server + ext, headers=headers)
 
-                info_dict ={}
+                info_dict = {}
                 if r.ok:
                     decoded = r.json()
                     add = decoded['length']
-                    info_dict.update([('length',decoded['length'])])
+                    info_dict.update([('length', decoded['length'])])
                 else:
-                    add = 'Can not find chromosome "{}" of species "{}"'.format(chromo,species)
-                    info_dict.update([('error', 'Can not find chromosome "{}" of species "{}"'.format(chromo,species))])
+                    add = 'Can not find chromosome "{}" of species "{}"'.format(chromo, species)
+                    info_dict.update([('error', 'Can not find chromosome {} of species {}'.format(chromo, species))])
 
-                info_dict = str(info_dict).replace("'",'"')
+                info_dict = str(info_dict).replace("'", '"')
 
                 # Include the information in my future html file
                 title = 'Chromosome lenght'
@@ -153,10 +162,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                     decoded2 = r2.json()
                     add = decoded2['seq']
-                    info_dict.update([('sequence',decoded2['seq'])])
+                    info_dict.update([('sequence', decoded2['seq'])])
                 except Exception:
                     add = 'There is no "{}" gene stored in the database'.format(gene)
-                    info_dict.update([('error','There is no "{}" gene stored in the database'.format(gene))])
+                    info_dict.update([('error', 'There is no {} gene stored in the database'.format(gene))])
 
                 info_dict = str(info_dict).replace("'", '"')
 
@@ -173,7 +182,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     gene = path.split('=')[1]
 
                 ext = ENDPOINTS[3].format(gene)
-                info_dict ={}
+                info_dict = {}
                 try:
                     r1 = requests.get(server + ext, headers=headers)
                     decoded1 = r1.json()
@@ -184,13 +193,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     decoded2 = r2.json()
 
                     a = decoded2['desc'].split(':')
-                    chromo, start, end, id, length = a[2], a[3] ,a[4], decoded2['id'], decoded2['id']
+                    chromo, start, end, id, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
 
-                    add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start,end,length,id,chromo)
-                    info_dict.update([('start',start),('end',end),('length',length), ('id',id), ('chromosome',chromo)])
+                    add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, id, chromo)
+                    info_dict.update(
+                        [('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
                 except Exception:
                     add = 'No gene called "{}" is stored in the database'.format(gene)
-                    info_dict.update([('error', 'No gene called "{}" is stored in the database'.format(gene))])
+                    info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
 
                 info_dict = str(info_dict).replace("'", '"')
 
@@ -219,13 +229,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     decoded2 = r2.json()
                     seq = Seq(decoded2['seq'])
                     length = seq.len()
-                    perc = [seq.perc('A'),seq.perc('C'),seq.perc('T'),seq.perc('G')]
+                    perc = [seq.perc('A'), seq.perc('C'), seq.perc('T'), seq.perc('G')]
 
-                    add = 'Length: {}\n  Percentage of A: {}\n  Percentage of C: {}\n  Percentage of T: {}\n  Percentage of G: {}'.format(length,perc[0],perc[1],perc[2],perc[3])
-                    info_dict.update([('length', length),('perc_A',perc[0]), ('perc_C',perc[1]), ('perc_T',perc[2]), ('perc_G',perc[3])])
+                    add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  Percentage of G: {}%'.format(
+                        length, perc[0], perc[1], perc[2], perc[3])
+                    info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),
+                                      ('perc_T', perc[2] + '%'), ('perc_G', perc[3] + '%')])
                 except Exception:
                     add = 'No gene called "{}" is stored in the database'.format(gene)
-                    info_dict.update([('error', 'No gene called "{}" is stored in the database'.format(gene))])
+                    info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
 
                 info_dict = str(info_dict).replace("'", '"')
 
@@ -242,15 +254,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 end = path.split('&')[2].split('=')[1]
 
                 ext = ENDPOINTS[2].format(chromo, start, end)
-                r = requests.get(server + ext, headers=headers)
                 info_dict = {}
-                if r.ok:
+                try:
+                    r = requests.get(server + ext, headers=headers)
                     decoded = r.json()
                     add = ''
                     for i in range(len(decoded)):
                         add += 'Gene {}: {}\n'.format(i, decoded[i]['external_name'])
                         info_dict.update([(str(i), decoded[i]['external_name'])])
-                else:
+                except Exception:
                     add = 'No slice found for location {}:{}-{}'.format(chromo, start, end)
                     info_dict.update([('error', 'No slice found for location {}:{}-{}'.format(chromo, start, end))])
 
@@ -260,12 +272,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Gene list of chromosome {} from {} to {}'.format(chromo, start, end)
                 info = html.format(title, h, add)
 
-            elif path == '':
+            elif path == '' or 'favicon.ico' in path:
                 pass
 
             else:
                 # In the case that I get an endpoint different from the ones I have decided to use,
-                # the client recieves an error message
+                # the client receives an error message
                 resp = 404
                 f = open('error.html', 'r')
                 info = f.read()
@@ -291,6 +303,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         if 'json=1' in path and resp == 200:
             type = 'application/json'
             content = info_dict
+
         # Send the headers and the response html
         self.send_response(resp)
         self.send_header('Content-Type', type)
