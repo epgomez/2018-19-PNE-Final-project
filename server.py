@@ -1,4 +1,4 @@
-import socketserver, http.server, requests, termcolor, sys
+import socketserver, http.server,requests, termcolor
 from Seq import Seq
 
 PORT_server = 8000
@@ -12,8 +12,7 @@ socketserver.TCPServer.allow_reuse_address = True
 # this is the future html file that will be sent to the client
 # It has blank spaces that will be filled later
 
-
-html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{}</title></head><body><h3>{}</h3><a href="/">Main page</a><pre>{}</pre><a href="/">Main page</a></body></html>'
+html: str = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{}</title></head><body><h3>{}</h3><a href="/">Main page</a><pre>{}</pre><a href="/">Main page</a></body></html>'
 
 
 class TestHandler(http.server.BaseHTTPRequestHandler):
@@ -52,12 +51,14 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 info_dict = {}
                 # Add the common and the scientific name of all the species to the list
                 for i in range(int(limit)):
-                    # I add the information in form of a string in case the user wants it like that and in form of a dictionary if the user wants a json
+                    # I add the information in form of a string in case the user wants it like that and in form of a
+                    # dictionary if the user wants a json
                     add += 'Scientific name: {} \nCommon name: {}\n\n'.format(decoded['species'][i]['name'],
                                                                               decoded['species'][i]['common_name'])
                     common = decoded['species'][i]['common_name']
-                    # If there is a "'" character in the common name of an species, this would make the later replacement of "'" by '"'
-                    # introduce an extra " that would make the json file impossible for the client to read, so if I detect one I skip it
+                    # If there is a "'" character in the common name of an species, this would make the later
+                    # replacement of "'" by '"' introduce an extra " that would make the json file impossible for the
+                    # client to read, so if I detect one I skip it
                     if "'" in common:
                         common = common.replace("'", '')
                     info_dict.update(
@@ -231,10 +232,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     length = seq.len()
                     perc = [seq.perc('A'), seq.perc('C'), seq.perc('T'), seq.perc('G')]
 
-                    add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  Percentage of G: {}%'.format(
-                        length, perc[0], perc[1], perc[2], perc[3])
+                    add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  ' \
+                          'Percentage of G: {}%'.format(length, perc[0], perc[1], perc[2], perc[3])
                     info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),
-                                      ('perc_T', perc[2] + '%'), ('perc_G', perc[3] + '%')])
+                                      ("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
                 except Exception:
                     add = 'No gene called "{}" is stored in the database'.format(gene)
                     info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
@@ -282,7 +283,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 f = open('error.html', 'r')
                 info = f.read()
 
-        except:
+        except Exception:
             # If an exception is raised, I send back an error message
             resp = 404
             f = open('hugeerror.html', 'r')
@@ -293,20 +294,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         d.write(info)
         d.close()
 
-        # Read the information form that response html file
+        # Read the information from that response html file
         d = open('response.html', 'r')
         content = d.read()
         d.close()
 
-        type = 'text/html'
+        contenttype = 'text/html'
 
         if 'json=1' in path and resp == 200:
-            type = 'application/json'
+            contenttype = 'application/json'
             content = info_dict
 
         # Send the headers and the response html
         self.send_response(resp)
-        self.send_header('Content-Type', type)
+        self.send_header('Content-Type', contenttype)
         self.send_header('Content-Length', len(str.encode(content)))
         self.end_headers()
 
