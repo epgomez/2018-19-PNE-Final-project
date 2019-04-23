@@ -14,7 +14,6 @@ socketserver.TCPServer.allow_reuse_address = True
 
 html: str = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{}</title></head><body><h3>{}</h3><a href="/">Main page</a><pre>{}</pre><a href="/">Main page</a></body></html>'
 
-
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -37,32 +36,38 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 # Process the client's request using the request module
                 r = requests.get(server + ext, headers=headers)
                 decoded = r.json()
+                print(path)
 
                 # Limit to the length of the list selected by the user
-                if 'json=1' in path:
-                    limit = path.split('=')[1].split('&')[0]
-                else:
-                    limit = path.split('=')[1]
+                try:
+                    if 'json=1' in path:
+                        limit = path.split('=')[1].split('&')[0]
+                    else:
+                        limit = path.split('=')[1]
+                # In case that the user hasn't introduced any limit while writing the URL in the browser
+                except IndexError:
+                    limit = len(decoded['species'])
 
                 # If there is no limit, the limit used will be the species' list's length
                 if limit == '':
                     limit = len(decoded['species'])
+
                 add = ''
                 info_dict = {}
+
                 # Add the common and the scientific name of all the species to the list
                 for i in range(int(limit)):
                     # I add the information in form of a string in case the user wants it like that and in form of a
                     # dictionary if the user wants a json
-                    add += 'Scientific name: {} \nCommon name: {}\n\n'.format(decoded['species'][i]['name'],
-                                                                              decoded['species'][i]['common_name'])
                     common = decoded['species'][i]['common_name']
+                    add += 'Scientific name: {} \nCommon name: {}\n\n'.format(decoded['species'][i]['name'], common)
+
                     # If there is a "'" character in the common name of an species, this would make the later
                     # replacement of "'" by '"' introduce an extra " that would make the json file impossible for the
                     # client to read, so if I detect one I skip it
                     if "'" in common:
                         common = common.replace("'", '')
-                    info_dict.update(
-                        [(str(i), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
+                    info_dict.update([(str(i), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
 
                 info_dict = str(info_dict).replace("'", '"')
                 # The title of the html file is different in each case
@@ -154,10 +159,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 info_dict = {}
                 try:
                     r1 = requests.get(server + ext, headers=headers)
-
+                    # I get the ensembl ID in order to be able to search
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
-
+                    # Once I have the ID, i use it to find the information i need about this gene
                     ext1 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext1, headers=headers)
 
@@ -165,6 +170,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     add = decoded2['seq']
                     info_dict.update([('sequence', decoded2['seq'])])
                 except Exception:
+                    # In case that the gene entere by the user is not oin the database
                     add = 'There is no "{}" gene stored in the database'.format(gene)
                     info_dict.update([('error', 'There is no {} gene stored in the database'.format(gene))])
 
@@ -185,10 +191,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 ext = ENDPOINTS[3].format(gene)
                 info_dict = {}
                 try:
+                    # I get the ID as before
                     r1 = requests.get(server + ext, headers=headers)
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
-
+                    # Now I get the information
                     ext1 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext1, headers=headers)
                     decoded2 = r2.json()
@@ -197,9 +204,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     chromo, start, end, id, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
 
                     add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, id, chromo)
-                    info_dict.update(
-                        [('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
+                    info_dict.update([('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
                 except Exception:
+                    # In case that the gene entered by the user is not stored in the database
                     add = 'No gene called "{}" is stored in the database'.format(gene)
                     info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
 
@@ -237,6 +244,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),
                                       ("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
                 except Exception:
+                    # In case that the gene entered by the user is not stored in the database
                     add = 'No gene called "{}" is stored in the database'.format(gene)
                     info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
 
@@ -273,7 +281,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Gene list of chromosome {} from {} to {}'.format(chromo, start, end)
                 info = html.format(title, h, add)
 
-            elif path == '' or 'favicon.ico' in path:
+            # I don't answer to
+            elif 'favicon.ico' in path:
                 pass
 
             else:
@@ -312,7 +321,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         self.wfile.write(str.encode(content))
-
 
 Handler = TestHandler
 

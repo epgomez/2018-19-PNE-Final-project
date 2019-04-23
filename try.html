@@ -1,35 +1,89 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Seq analysis</title>
-  </head>
-  <body style="background-color: lightblue">
-    <h3>Analysis of DNA sequences</h3>
-    <h2>H2</h2>
-    <h1>H1</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Genome info</title>
+    <style>
+        table, th, td {
+        background-color: ;
+        font-family: monospace;
+        font-size: 12px
+        }
+        form, h1, h3, h4, h5 {
+        color: white
+        }
+        li {
+        font-size: 18px;
+        color: white
+        }
+    </style>
+</head>
+<body style="background-color: #0000e6 ">
+<h5>Final project PNE  -  Eloy Perez Gomez</h5>
+<h1 style="color: white">Genomic information</h1>
+<h3>Page dedicated to the acquisition of information about the human and other vertebrates genome</h3>
+<h4>Options:</h4>
+<ul>
 
-    <form action="seq" method="get">
-      Enter your sequence:  <input type="text" name="msg">
-      <br><br>
-      Len:
-      <input type="checkbox" name="chk">
-      <br><br>
-      Choose operation:
-      <select name="operation">
-        <option value="count">Count</option>
-        <option value="perc">Percentage</option>
-      </select>
-      <br><br>
-      Select a base for your operation:
-      <input type="radio" name="base" value="A"> A
-      <input type="radio" name="base" value="C"> C
-      <input type="radio" name="base" value="T"> T
-      <input type="radio" name="base" value="G"> G
-      <br><br>
-      <br>
-        <input type="submit"/>
+    <li>List of all the availables species on the database</li>
+    <form action="listSpecies" method="get">
+     You can restrict the length of the list:  <input type="number" name="limit" min="0" max="199">
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+    <input type="submit"/>
     </form>
+    <p></p>
+    <li>Information about the karyotype of a species</li>
+    <form action="karyotype" method="get">
+        Species desired:  <input type="text" name="specie">
+             <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
 
-  </body>
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Length of a specific chromosome</li>
+        <form action="chromosomeLength" method="get">
+            <br>Species and chromosome desired:</br>
+        Species:<input type="text" name="specie">
+        Chromosome: <input type="text" name="chromo">
+            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Sequence of a human gene</li>
+    <form action="geneSeq" method="get">
+        Gene name: <input type="text" name="gene">
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Information about a human gene</li>
+    <form action="geneInfo" method="get">
+        Gene name: <input type="text" name="gene">
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>Calculations on a human gene</li>
+    <form action="geneCal" method="get">
+        Gene name: <input type="text" name="gene">
+        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+
+    <input type="submit"/>
+    </form>
+    <p></p>
+    <li>List of the genes of a specific region of the human genome</li>
+        <form action="geneList" method="get">
+        Chromosome: <input type="text" name="chromo">
+        Start point: <input type="number" name="start">
+        End point: <input type="number" name="end">
+            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
+
+    <input type="submit"/>
+    </form>
+</ul>
+
+
+</body>
 </html>

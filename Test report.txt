@@ -1,0 +1,24 @@
+Basic part
+
+GET /listSpecies?limit=
+        -  Lists all available species. with the optional parameter limit, you can restrict the length of the list
+
+GET /karyotype?specie=x
+        -  Returns a list with the karyotype of species "x"
+
+GET /chromosomeLegnth?specie=x&chromo=y
+        -  Returns the length of chromosome "y" of species "x".
+
+Medium part
+
+GET /geneSeq?gene=x
+        -  Returns the length of the "x" gene.
+
+GET /geneInfo?gene=x
+        -  Returns the start and end points, length, id and chromosome of a given gene
+
+GET /geneCal?gene=x
+        -  Returns the total length and percentage of all bases of chromosome "x"
+
+GET /geneList?chromo=x&start=y&end=z
+        -  Returns the names of all the genes located in chromosome "x" between position "y" and "z".
