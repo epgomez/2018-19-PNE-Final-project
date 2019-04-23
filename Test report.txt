@@ -1,24 +1,205 @@
-Basic part
+Basic level
 
-GET /listSpecies?limit=
-        -  Lists all available species. with the optional parameter limit, you can restrict the length of the list
+http://localhost:8000/listSpecies?limit=
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: danio_rerio
+    Common name: zebrafish
 
-GET /karyotype?specie=x
-        -  Returns a list with the karyotype of species "x"
+    Scientific name: cricetulus_griseus_picr
+    Common name: Chinese hamster
+        (...)
+    Scientific name: ursus_americanus
+    Common name: American black bear
 
-GET /chromosomeLegnth?specie=x&chromo=y
-        -  Returns the length of chromosome "y" of species "x".
+    </pre><a href="/">Main page</a></body></html>
 
-Medium part
+http://localhost:8000/listSpecies
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: danio_rerio
+    Common name: zebrafish
 
-GET /geneSeq?gene=x
-        -  Returns the length of the "x" gene.
+    Scientific name: cricetulus_griseus_picr
+    Common name: Chinese hamster
+        (...)
+    Scientific name: ursus_americanus
+    Common name: American black bear
 
-GET /geneInfo?gene=x
-        -  Returns the start and end points, length, id and chromosome of a given gene
+    </pre><a href="/">Main page</a></body></html>
 
-GET /geneCal?gene=x
-        -  Returns the total length and percentage of all bases of chromosome "x"
+http://localhost:8000/listSpecies?limit=7
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: parus_major
+    Common name: Great Tit
 
-GET /geneList?chromo=x&start=y&end=z
-        -  Returns the names of all the genes located in chromosome "x" between position "y" and "z".
+    Scientific name: poecilia_reticulata
+    Common name: guppy
+
+    Scientific name: anabas_testudineus
+    Common name: climbing perch
+
+    Scientific name: spermophilus_dauricus
+    Common name: Daurian ground squirrel
+
+    Scientific name: zonotrichia_albicollis
+    Common name: white-throated sparrow
+
+    Scientific name: felis_catus
+    Common name: domestic cat
+
+    Scientific name: kryptolebias_marmoratus
+    Common name: mangrove rivulus
+
+    </pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/listSpecies?limit=3333
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre><pre style = "color: red">CAREFUL! The maximum length is 199!</pre>(We are showing the maximum number of species possible)
+
+    Scientific name: parus_major
+    Common name: Great Tit
+        (...)
+    Scientific name: mus_pahari
+    Common name: Shrew mouse
+
+    </pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/karyotype?specie=human
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of human</h3><a href="/">Main page</a><pre>Chromosome number 1: 1
+    Chromosome number 2: 2
+    Chromosome number 3: 3
+    Chromosome number 4: 4
+        (...)
+    Chromosome number 22: 22
+    Chromosome number 23: X
+    Chromosome number 24: Y
+    </pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/karyotype?specie=mouse
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of mouse</h3><a href="/">Main page</a><pre>Chromosome number 1: 1
+    Chromosome number 2: 2
+    Chromosome number 3: 3
+        (...)
+    Chromosome number 20: X
+    Chromosome number 21: Y
+    </pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/karyotype?specie=blabla
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of blabla</h3><a href="/">Main page</a><pre>Can not find internal name for species "blabla"</pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=X
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome lenght</title></head><body><h3>Lenght of the X chromosome of human</h3><a href="/">Main page</a><pre>156040895</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=q
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome lenght</title></head><body><h3>Lenght of the q chromosome of human</h3><a href="/">Main page</a><pre>Can not find chromosome "q" of species "human"</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/chromosomeLength?specie=fail&chromo=X
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome lenght</title></head><body><h3>Lenght of the X chromosome of fail</h3><a href="/">Main page</a><pre>Can not find chromosome "X" of species "fail"</pre><a href="/">Main page</a></body></html>
+
+
+
+
+Medium level
+
+http://localhost:8000/geneSeq?gene=FRAT1
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene FRAT1 seq</title></head><body><h3>Sequence of gene FRAT1</h3><a href="/">Main page</a><pre>ATTCCGGCTCCCGC(...)ACACTTGAAATCTC</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/geneSeq?gene=FRAT13
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>ERROR</title></head><body><h3><pre style = "color: red; font-size: 18px">Wrong name!</pre></h3><a href="/">Main page</a><pre>There is no "FRAT13" gene stored in the database</pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/geneInfo?gene=FRAT1
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene FRAT1 inf</title></head><body><h3>Information about gene FRAT1</h3><a href="/">Main page</a><pre>Start: 97319267
+    End:97321915
+    Length: ENSG00000165879
+    id: ENSG00000165879
+    Chromosome: 10</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/geneInfo?gene=FRAT13
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>ERROR</title></head><body><h3><pre style = "color: red; font-size: 18px">Wrong name!</pre></h3><a href="/">Main page</a><pre>There is no "FRAT13" gene stored in the database</pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/geneCalc?gene=FRAT1
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene FRAT1 calc</title></head><body><h3>Calculations performed on gene FRAT1</h3><a href="/">Main page</a><pre>Length: 2649
+  Percentage of A: 18.04%
+  Percentage of C: 30.2%
+  Percentage of T: 19.71%
+  Percentage of G: 32.05%</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/geneCalc?gene=FRAT13
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>ERROR</title></head><body><h3><pre style = "color: red; font-size: 18px">Wrong name!</pre></h3><a href="/">Main page</a><pre>There is no "FRAT13" gene stored in the database</pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/geneList?chromo=X&start=0&end=300000
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene list</title></head><body><h3>Gene list of chromosome X from 0 to 300000</h3><a href="/">Main page</a><pre>Gene 0: AL954722.1
+    Gene 1: PLCXD1
+    </pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/geneList?chromo=X&start=0&end=300000e
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene list</title></head><body><h3>Gene list of chromosome X from 0 to 300000e</h3><a href="/">Main page</a><pre>No slice found for location X:0-300000e</pre><a href="/">Main page</a></body></html>
+
+
+
+
+Advanced level
+
+http://localhost:8000/listSpecies?limit=&json=1
+    {"1": {"common_name": "Great Tit", "scientific_name": "parus_major"},
+     "2": {"common_name": "guppy", "scientific_name": "poecilia_reticulata"},
+     (...)
+     , "198": {"common_name": "dingo", "scientific_name": "canis_lupus_dingo"},
+      "199": {"common_name": "Shrew mouse", "scientific_name": "mus_pahari"}}
+
+http://localhost:8000/listSpecies?json=1
+    {"1": {"common_name": "zebrafish", "scientific_name": "danio_rerio"}, "1": {"common_name": "Chinese hamster", "scientific_name": "cricetulus_griseus_picr"},
+    (...)
+    , "199": {"common_name": "American black bear", "scientific_name": "ursus_americanus"}}
+
+http://localhost:8000/listSpecies?limit=7&json=1
+    {"1": {"common_name": "zebrafish", "scientific_name": "danio_rerio"}, "2": {"common_name": "Chinese hamster", "scientific_name": "cricetulus_griseus_picr"}, "3": {"common_name": "three-spined stickleback", "scientific_name": "gasterosteus_aculeatus"}, "4": {"common_name": "torafugu", "scientific_name": "takifugu_rubripes"}, "5": {"common_name": "Sooty mangabey", "scientific_name": "cercocebus_atys"}, "6": {"common_name": "red-bellied piranha", "scientific_name": "pygocentrus_nattereri"}, "7": {"common_name": "little brown bat", "scientific_name": "myotis_lucifugus"}}
+
+http://localhost:8000/listSpecies?limit=3333&json=1
+    {"1": {"common_name": "birds", "scientific_name": "nothoprocta_perdicaria"},
+    (...)
+    , "199": {"common_name": "Polar bear", "scientific_name": "ursus_maritimus"}
+    , "0": {"CAREFUL!": "The maximum length is 199! (We are showing the maximum number of species possible)"}}
+
+
+http://localhost:8000/karyotype?specie=human&json=1
+    {"0": "1", "1": "2", "2": "3", "3": "4", "4": "5", "5": "6", "6": "7", "7": "8", "8": "9", "9": "10", "10": "11", "11": "12", "12": "13", "13": "14", "14": "15", "15": "16", "16": "17", "17": "18", "18": "19", "19": "20", "20": "21", "21": "22", "22": "X", "23": "Y"}
+
+http://localhost:8000/karyotype?specie=blabla&json=1
+    {"error": "Can not find internal name for species blabla"}
+
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=X&json=1
+    {"length": 156040895}
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=q&json=1
+    {"error": "Can not find chromosome q of species human"}
+
+
+http://localhost:8000/geneSeq?gene=FRAT1&json=1
+    {"sequence": "ATTCCGGCTCCCGCGGCTGCAGGCGCGCGGCTAGAGTGCCTGGCGGGCTCCGGCTTCCGCGTCCGCCCCGGCCCCGGTCCAGACTTAGTCTTCAGCTCCGCGCCCGCTCCGCCGCGGCCCACCGCGCCCGCCGGCAGCCGAGCCCCCAGCGACGCCCGCACAGCTCCGGGTGCCCAGACAGGGGGCCATGCCGTGCCGGAGGGAGGAGGAAGAGGAAGCCGGCGAGGAGGCGGAGGGGGAGGAAGAGGAGGAGGACAGCTTCCTCCTACTGCAGCAGTCAGTGGCGCTGGGCAGCTCGGGCGAGGTGGACCGGCTGGTGGCCCAGATCGGCGAGACGCTGCAGCTGGACGCGGCGCAGCACAGCCCGGCCTCGCCGTGCGGGCCCCCGGGGGCGCCGCTGCGGGCCCCGGGGCCCCTGGCTGCGGCGGTGCCGGCGGACAAGGCCAGGTCCCCGGCGGTGCCGCTGCTGCTGCCGCCCGCGTTGGCGGAGACTGTGGGCCCGGCGCCCCCTGGGGTCCTGCGCTGCGCCCTGGGGGACCGCGGCCGCGTGCGGGGCCGCGCTGCGCCCTACTGCGTGGCCGAGCTCGCCACAGGCCCCAGCGCGCTGTCCCCACTGCCCCCTCAGGCCGACCTTGATGGGCCTCCGGGAGCTGGCAAGCAGGGCATCCCGCAGCCGCTGTCGGGTCCGTGCCGGCGAGGATGGCTCCGGGGCGCCGCCGCCTCCCGCCGCCTGCAGCAGCGACGCGGGTCCCAACCAGAAACCCGCACAGGCGACGACGACCCGCACCGGCTTCTGCAGCAGCTAGTGCTCTCTGGAAACCTCATCAAGGAGGCCGTGCGAAGGCTTCATTCGCGACGGCTGCAGTTACGTGCAAAGCTTCCCCAACGCCCGCTCCTGGGACCTCTGTCGGCCCCGGTGCATGAACCCCCTTCGCCTCGCAGCCCTCGCGCGGCCTGCAGTGACCCTGGCGCCTCCGGGAGGGCGCAGCTCAGAACTGGCGACGGCGTTCTTGTGCCTGGCAGCTAACACGCCCGGGGTGGCCACAGCGCCAGCCTCAGACTGGAGGGCAAGGGGTTCCCTTGAGGGCTGCAGTTCTACTCAGGCTGGTGGAGAACTCTGGCTTTTGGAAGCGAGAGTAAAAAGCTAATGACGAGGAACCGAAAAATCGCGAGTGTTTCGCGGGTAACTGGGGTTGAGGGCCAAAATATTTGGAATGAAGGACTTTGGCCCTATTTAAGGCAGATTTTACAGAGCGCACCTCAAACGTACAAGTCAGTAGGACTCCTTATTTGGCGTGACCCGACCTGGCCGCGGAGCCTGCATTTCCTCGCAGCCTCTCAGTGCCCTCCAGCCCCGCGACCATGTGGCCACAATCCACGCTTCTCCGGATCGCGGTGCGCCGGAACCACGGAGGATGATGCCAGTTACTTGCTTTACCTTTTCAGGGCTGGCTCCTGATCCACTTTGGGGGAGGAGAACATGAGTAGATAATTTCAGGGTGCAGCCCAATCTGCCAGACTTAAAAAAACCATCTTGTGTCTTTGGAGGTGCTGCTTAATACCAAACATGCGGTGCCATGAAGGGACCCTTTGGGGGTTGAATAGGAGTTAACCCCTGCGCTCTCTTTGCAACTGTCTCTCTTCTCAGAGTGGTGGGGGAAGGCTGTACGACACGGGTGGGGAAAGGAGGTGGGGGCGGGGAGTATTGAATGGTGGTGGAAGGGTAGAGAGGCGCGGAGTGAACCCCACGCCCTGTCTAAAGTGTATTTTCAGAGCCGGCCCGCCTCTCCTCGGTTCAAGGTCACTGTTTCCTGGGCACGCACTGGGTTGCGGGACAGAGTAGCCAGGTTCTGCCGGTGCTCGGAGAAGAGCGCAGTGTTTTGCAAGTGCTGGAGTCTCCTGAGGACACGCGCGTCGCCGCCACCGCGGGTGTGGGAAAGCGCGGACGTGCTGGGCGGCTGTGCTTCGGTAGGCGACCACCGCCCCTGGCCGCGCTCCGGGCTTTCACGGAAACTCCCGAGACCGGGCCCTGGGTTCCTCCTCTCCTACTCGGCTCTGCAGTCCTACTCAAGCGGGTGGCTCTGGGATCCTGGGGGCCTGGGTTGGGGGCTAGGGAGACGCCATGTGATGGACACTCCAGGGACACACAGCCTAGCACAGCAGCTTATAATGGGCTCTCCGGGGCCATTTGCAATAACAGCTGCAATTCCCTGGATAGACGAGTTGATTTCCTCCCTCTGCCCCTCCCCCAGCCATGCCAGCTGGCCTTTGTAAGTGCAGGAAACCGAGTAGAAAATGTGACCCTCCAAATGGAGAAGCTGCAGGCTTTGCCATTGTGAACCATGGTGAAGTGCTTGGAACATACTGTTCACTCACTCTAAAGGCGCTGAGACTGTGCTGTTGTTCTCGTTTTTATAGTCAATGGCTTGTTCATCATCCAGATGTGGCTACTGACATATCTACACTTCGCACCGGAGTGTCTGGAATTGTGGCTATCCTGATTATAGGATTTTAACTTAACTGAAATGCCTGCTTTGAATAAATGTGTTGGGTTTTTTGTTTGGTTTTATTTTATACTTGCCATCAGTGAAAAAGATGTACAGAACACATTTCTCTGATCTCCATAAACATGAAAACACTTGAAATCTC"}
+
+http://localhost:8000/geneSeq?gene=FRAT13&json=1
+    {"error": "There is no FRAT13 gene stored in the database"}
+
+
+http://localhost:8000/geneInfo?gene=FRAT1&json=1
+    {"start": "97319267", "end": "97321915", "length": "ENSG00000165879", "id": "ENSG00000165879", "chromosome": "10"}
+
+http://localhost:8000/geneInfo?gene=FRAT13&json=1
+    {"error": "There is no FRAT13 gene stored in the database"}
+
+
+http://localhost:8000/geneCalc?gene=FRAT1&json=1
+    {"length": "2649", "perc_A": "18.04%", "perc_C": "30.2%", "perc_T": "19.71%", "perc_G": "32.05%"}
+
+http://localhost:8000/geneCalc?gene=FRAT13&json=1
+    {"error": "There is no FRAT13 gene stored in the database"}
+
+
+http://localhost:8000/geneList?chromo=X&start=0&end=300000&json=1
+    {"0": "AL954722.1", "1": "PLCXD1"}
+
+http://localhost:8000/geneList?chromo=X&start=0&end=300000e&json=1
+    {"error": "No slice found for location X:0-300000e"}
+

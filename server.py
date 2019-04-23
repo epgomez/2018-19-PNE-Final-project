@@ -20,6 +20,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
         termcolor.cprint(self.requestline, 'green')
         path = self.path
+        end = path[1:path.find('?')]
 
         try:
             if path == '/':
@@ -29,19 +30,23 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 with open('home.html', 'r') as f:
                     info = f.read()
 
-            elif 'listSpecies' in path:
+            elif end == 'listSpecies':
 
                 resp = 200
                 ext = ENDPOINTS[0]
                 # Process the client's request using the request module
                 r = requests.get(server + ext, headers=headers)
                 decoded = r.json()
-                print(path)
 
                 # Limit to the length of the list selected by the user
                 try:
                     if 'json=1' in path:
-                        limit = path.split('=')[1].split('&')[0]
+                        # In case that the user hasn't introduced any limit while writing the URL in the browser
+                        # otherwise, the limit will be established at 1
+                        if 'limit' not in path:
+                            limit = len(decoded['species'])
+                        else:
+                            limit = path.split('=')[1].split('&')[0]
                     else:
                         limit = path.split('=')[1]
                 # In case that the user hasn't introduced any limit while writing the URL in the browser
@@ -54,9 +59,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                 add = ''
                 info_dict = {}
+                limit_passed = False
 
-                # Add the common and the scientific name of all the species to the list
+                if int(limit) > 199:
+                    add += '<pre style = "color: red">CAREFUL! The maximum length is 199!</pre>(We are showing the maximum number of species possible)\n\n'
+                    limit = 199
+                    limit_passed = True
+                    # Add the common and the scientific name of all the species to the list
                 for i in range(int(limit)):
+
                     # I add the information in form of a string in case the user wants it like that and in form of a
                     # dictionary if the user wants a json
                     common = decoded['species'][i]['common_name']
@@ -67,7 +78,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     # client to read, so if I detect one I skip it
                     if "'" in common:
                         common = common.replace("'", '')
-                    info_dict.update([(str(i), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
+
+                    info_dict.update([(str(i+1), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
+
+                if limit_passed:
+                    info_dict.update([('0', {'CAREFUL!':'The maximum length is 199! (We are showing the maximum number of species possible)'})])
 
                 info_dict = str(info_dict).replace("'", '"')
                 # The title of the html file is different in each case
@@ -77,7 +92,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 # Include the information in the future html response text
                 info = html.format(title, h, add)
 
-            elif 'karyotype' in path:
+            elif end == 'karyotype' :
 
                 resp = 200
                 if 'json=1' in path:
@@ -117,7 +132,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Karyotype of {}'.format(path.split('=')[1])
                 info = html.format(title, h, add)
 
-            elif 'chromosomeLength' in path:
+            elif end == 'chromosomeLength' :
 
                 resp = 200
                 # In this case, I receive two mandatory endpoints: "species" and "chromo"
@@ -147,114 +162,67 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Lenght of the {} chromosome of {}'.format(chromo, species)
                 info = html.format(title, h, add)
 
-            elif 'geneSeq' in path:
-
+            elif end == 'geneSeq' or end == 'geneInfo' or end == 'geneCalc' :
+                # Since I need to use the same endpoint for these three at the beginning,
+                # I'm going to make the first part al together
                 resp = 200
                 if 'json=1' in path:
                     gene = path.split('=')[1].split('&')[0]
                 else:
                     gene = path.split('=')[1]
 
-                ext = ENDPOINTS[3].format(gene)
+                ext1 = ENDPOINTS[3].format(gene)
                 info_dict = {}
                 try:
-                    r1 = requests.get(server + ext, headers=headers)
+                    r1 = requests.get(server + ext1, headers=headers)
                     # I get the ensembl ID in order to be able to search
                     decoded1 = r1.json()
                     id = decoded1[0]['id']
-                    # Once I have the ID, i use it to find the information i need about this gene
-                    ext1 = ENDPOINTS[4].format(id)
-                    r2 = requests.get(server + ext1, headers=headers)
 
+                    # Once I have the ID, i use it to find the information i need about this gene
+                    ext2 = ENDPOINTS[4].format(id)
+                    r2 = requests.get(server + ext2, headers=headers)
                     decoded2 = r2.json()
-                    add = decoded2['seq']
-                    info_dict.update([('sequence', decoded2['seq'])])
+
+                    if end == 'geneSeq':
+                        add = decoded2['seq']
+                        info_dict.update([('sequence', decoded2['seq'])])
+
+                        title = 'Gene {} seq'.format(gene)
+                        h = 'Sequence of gene {}'.format(gene)
+
+                    elif end == 'geneInfo':
+                        a = decoded2['desc'].split(':')
+                        chromo, start, end, id, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
+
+                        add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, id, chromo)
+                        info_dict.update([('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
+
+                        title = 'Gene {} inf'.format(gene)
+                        h = 'Information about gene {}'.format(gene)
+
+                    elif end == 'geneCalc':
+                        seq = Seq(decoded2['seq'])
+                        length = seq.len()
+                        perc = [seq.perc('A'), seq.perc('C'), seq.perc('T'), seq.perc('G')]
+
+                        add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  Percentage of G: {}%'.format(length, perc[0], perc[1], perc[2], perc[3])
+                        info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
+
+                        title = 'Gene {} calc'.format(gene)
+                        h = 'Calculations performed on gene {}'.format(gene)
+
                 except Exception:
-                    # In case that the gene entere by the user is not oin the database
+                    # In case that the gene entered by the user is not oin the database
                     add = 'There is no "{}" gene stored in the database'.format(gene)
                     info_dict.update([('error', 'There is no {} gene stored in the database'.format(gene))])
+                    title = 'ERROR'
+                    h = '<pre style = "color: red; font-size: 18px">Wrong name!</pre>'
 
                 info_dict = str(info_dict).replace("'", '"')
-
-                title = 'Gene {} seq'.format(gene)
-                h = 'Sequence of gene {}'.format(gene)
                 info = html.format(title, h, add)
 
-            elif 'geneInfo' in path:
-
-                resp = 200
-                if 'json=1' in path:
-                    gene = path.split('=')[1].split('&')[0]
-                else:
-                    gene = path.split('=')[1]
-
-                ext = ENDPOINTS[3].format(gene)
-                info_dict = {}
-                try:
-                    # I get the ID as before
-                    r1 = requests.get(server + ext, headers=headers)
-                    decoded1 = r1.json()
-                    id = decoded1[0]['id']
-                    # Now I get the information
-                    ext1 = ENDPOINTS[4].format(id)
-                    r2 = requests.get(server + ext1, headers=headers)
-                    decoded2 = r2.json()
-
-                    a = decoded2['desc'].split(':')
-                    chromo, start, end, id, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
-
-                    add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, id, chromo)
-                    info_dict.update([('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
-                except Exception:
-                    # In case that the gene entered by the user is not stored in the database
-                    add = 'No gene called "{}" is stored in the database'.format(gene)
-                    info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
-
-                info_dict = str(info_dict).replace("'", '"')
-
-                title = 'Gene {} inf'.format(gene)
-                h = 'Information about gene {}'.format(gene)
-                info = html.format(title, h, add)
-
-            elif 'geneCal' in path:
-
-                resp = 200
-                if 'json=1' in path:
-                    gene = path.split('=')[1].split('&')[0]
-                else:
-                    gene = path.split('=')[1]
-
-                ext = ENDPOINTS[3].format(gene)
-                info_dict = {}
-                try:
-                    r1 = requests.get(server + ext, headers=headers)
-                    decoded1 = r1.json()
-                    id = decoded1[0]['id']
-
-                    ext1 = ENDPOINTS[4].format(id)
-                    r2 = requests.get(server + ext1, headers=headers)
-
-                    decoded2 = r2.json()
-                    seq = Seq(decoded2['seq'])
-                    length = seq.len()
-                    perc = [seq.perc('A'), seq.perc('C'), seq.perc('T'), seq.perc('G')]
-
-                    add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  ' \
-                          'Percentage of G: {}%'.format(length, perc[0], perc[1], perc[2], perc[3])
-                    info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),
-                                      ("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
-                except Exception:
-                    # In case that the gene entered by the user is not stored in the database
-                    add = 'No gene called "{}" is stored in the database'.format(gene)
-                    info_dict.update([('error', 'No gene called {} is stored in the database'.format(gene))])
-
-                info_dict = str(info_dict).replace("'", '"')
-
-                title = 'Gene {} calc'.format(gene)
-                h = 'Calculations performed on gene {}'.format(gene)
-                info: str = html.format(title, h, add)
-
-            elif 'geneList' in path:
+            elif end == 'geneList':
 
                 resp = 200
 
@@ -281,10 +249,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Gene list of chromosome {} from {} to {}'.format(chromo, start, end)
                 info = html.format(title, h, add)
 
-            # I don't answer to
-            elif 'favicon.ico' in path:
-                pass
-
             else:
                 # In the case that I get an endpoint different from the ones I have decided to use,
                 # the client receives an error message
@@ -308,15 +272,15 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         content = d.read()
         d.close()
 
-        contenttype = 'text/html'
+        content_type = 'text/html'
 
         if 'json=1' in path and resp == 200:
-            contenttype = 'application/json'
+            content_type = 'application/json'
             content = info_dict
 
         # Send the headers and the response html
         self.send_response(resp)
-        self.send_header('Content-Type', contenttype)
+        self.send_header('Content-Type', content_type)
         self.send_header('Content-Length', len(str.encode(content)))
         self.end_headers()
 
