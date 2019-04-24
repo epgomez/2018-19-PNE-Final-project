@@ -53,7 +53,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 except IndexError:
                     limit = len(decoded['species'])
 
-                # If there is no limit, the limit used will be the species' list's length
+                # If there is no limit entered, the limit used will be the species' list's length
                 if limit == '':
                     limit = len(decoded['species'])
 
@@ -62,6 +62,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 limit_passed = False
 
                 if int(limit) > 199:
+                    # If the limit entered by the user is over 199,
+                    # a warning message is sent back with the full list
                     add += '<pre style = "color: red">CAREFUL! The maximum length is 199!</pre>(We are showing the maximum number of species possible)\n\n'
                     limit = 199
                     limit_passed = True
@@ -158,13 +160,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 info_dict = str(info_dict).replace("'", '"')
 
                 # Include the information in my future html file
-                title = 'Chromosome lenght'
-                h = 'Lenght of the {} chromosome of {}'.format(chromo, species)
+                title = 'Chromosome length'
+                h = 'Length of chromosome {} of species {}'.format(chromo, species)
                 info = html.format(title, h, add)
 
             elif end == 'geneSeq' or end == 'geneInfo' or end == 'geneCalc' :
-                # Since I need to use the same endpoint for these three at the beginning,
-                # I'm going to make the first part al together
+
                 resp = 200
                 if 'json=1' in path:
                     gene = path.split('=')[1].split('&')[0]
@@ -173,6 +174,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                 ext1 = ENDPOINTS[3].format(gene)
                 info_dict = {}
+
                 try:
                     r1 = requests.get(server + ext1, headers=headers)
                     # I get the ensembl ID in order to be able to search
@@ -183,6 +185,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     ext2 = ENDPOINTS[4].format(id)
                     r2 = requests.get(server + ext2, headers=headers)
                     decoded2 = r2.json()
+
+                    # Now a different response is returned depending on the request. The information is stored in form
+                    # of string in the variable "add" and in form of dictionary in variable "info_dict"
 
                     if end == 'geneSeq':
                         add = decoded2['seq']
@@ -213,7 +218,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         h = 'Calculations performed on gene {}'.format(gene)
 
                 except Exception:
-                    # In case that the gene entered by the user is not oin the database
+                    # In case that the gene entered by the user is not stored in the database
                     add = 'There is no "{}" gene stored in the database'.format(gene)
                     info_dict.update([('error', 'There is no {} gene stored in the database'.format(gene))])
                     title = 'ERROR'
@@ -226,6 +231,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                 resp = 200
 
+                # I get the chromosome and start and end points
                 chromo = path.split('&')[0].split('=')[1]
                 start = path.split('&')[1].split('=')[1]
                 end = path.split('&')[2].split('=')[1]
@@ -239,6 +245,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     for i in range(len(decoded)):
                         add += 'Gene {}: {}\n'.format(i, decoded[i]['external_name'])
                         info_dict.update([(str(i), decoded[i]['external_name'])])
+                # In case the user has commited an error while requesting the slice
                 except Exception:
                     add = 'No slice found for location {}:{}-{}'.format(chromo, start, end)
                     info_dict.update([('error', 'No slice found for location {}:{}-{}'.format(chromo, start, end))])
