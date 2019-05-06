@@ -1,4 +1,7 @@
-import socketserver, http.server,requests, termcolor
+import socketserver
+import http.server
+import requests
+import termcolor
 from Seq import Seq
 
 PORT_server = 8000
@@ -14,11 +17,12 @@ socketserver.TCPServer.allow_reuse_address = True
 
 html: str = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>{}</title></head><body><h3>{}</h3><a href="/">Main page</a><pre>{}</pre><a href="/">Main page</a></body></html>'
 
+
+# noinspection PyBroadException
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
 
-        termcolor.cprint(self.requestline, 'green')
         path = self.path
         end = path[1:path.find('?')]
 
@@ -30,7 +34,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 with open('home.html', 'r') as f:
                     info = f.read()
 
-            elif end == 'listSpecies':
+            elif 'listSpecies' in path:
 
                 resp = 200
                 ext = ENDPOINTS[0]
@@ -39,19 +43,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 decoded = r.json()
 
                 # Limit to the length of the list selected by the user
-                try:
-                    if 'json=1' in path:
-                        # In case that the user hasn't introduced any limit while writing the URL in the browser
-                        # otherwise, the limit will be established at 1
-                        if 'limit' not in path:
-                            limit = len(decoded['species'])
-                        else:
-                            limit = path.split('=')[1].split('&')[0]
+
+                if 'json=1' in path:
+                    # In case that the user hasn't introduced any limit while writing the URL in the browser
+                    # otherwise, the limit will be established at 1
+                    if 'limit' not in path:
+                        limit = len(decoded['species'])
+                    else:
+                        limit = path.split('=')[1].split('&')[0]
+                else:
+                    # In case that the user hasn't introduced any limit while writing the URL in the browser
+                    if 'limit' not in path:
+                        limit = len(decoded['species'])
                     else:
                         limit = path.split('=')[1]
-                # In case that the user hasn't introduced any limit while writing the URL in the browser
-                except IndexError:
-                    limit = len(decoded['species'])
 
                 # If there is no limit entered, the limit used will be the species' list's length
                 if limit == '':
@@ -81,10 +86,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     if "'" in common:
                         common = common.replace("'", '')
 
-                    info_dict.update([(str(i+1), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
+                    info_dict.update(
+                        [(str(i + 1), {'common_name': common, 'scientific_name': decoded['species'][i]['name']})])
 
                 if limit_passed:
-                    info_dict.update([('0', {'CAREFUL!':'The maximum length is 199! (We are showing the maximum number of species possible)'})])
+                    info_dict.update([('0', {
+                        'CAREFUL!': 'The maximum length is 199! (We are showing the maximum number of species possible)'})])
 
                 info_dict = str(info_dict).replace("'", '"')
                 # The title of the html file is different in each case
@@ -94,7 +101,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 # Include the information in the future html response text
                 info = html.format(title, h, add)
 
-            elif end == 'karyotype' :
+            elif end == 'karyotype':
 
                 resp = 200
                 if 'json=1' in path:
@@ -134,7 +141,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Karyotype of {}'.format(path.split('=')[1])
                 info = html.format(title, h, add)
 
-            elif end == 'chromosomeLength' :
+            elif end == 'chromosomeLength':
 
                 resp = 200
                 # In this case, I receive two mandatory endpoints: "species" and "chromo"
@@ -164,7 +171,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 h = 'Length of chromosome {} of species {}'.format(chromo, species)
                 info = html.format(title, h, add)
 
-            elif end == 'geneSeq' or end == 'geneInfo' or end == 'geneCalc' :
+            elif end == 'geneSeq' or end == 'geneInfo' or end == 'geneCalc':
 
                 resp = 200
                 if 'json=1' in path:
@@ -179,10 +186,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     r1 = requests.get(server + ext1, headers=headers)
                     # I get the ensembl ID in order to be able to search
                     decoded1 = r1.json()
-                    id = decoded1[0]['id']
+                    ID = decoded1[0]['id']
 
                     # Once I have the ID, i use it to find the information i need about this gene
-                    ext2 = ENDPOINTS[4].format(id)
+                    ext2 = ENDPOINTS[4].format(ID)
                     r2 = requests.get(server + ext2, headers=headers)
                     decoded2 = r2.json()
 
@@ -198,10 +205,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                     elif end == 'geneInfo':
                         a = decoded2['desc'].split(':')
-                        chromo, start, end, id, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
+                        chromo, start, end, ID, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
 
-                        add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, id, chromo)
-                        info_dict.update([('start', start), ('end', end), ('length', length), ('id', id), ('chromosome', chromo)])
+                        add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, ID,
+                                                                                             chromo)
+                        info_dict.update(
+                            [('start', start), ('end', end), ('length', length), ('id', ID), ('chromosome', chromo)])
 
                         title = 'Gene {} inf'.format(gene)
                         h = 'Information about gene {}'.format(gene)
@@ -211,8 +220,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                         length = seq.len()
                         perc = [seq.perc('A'), seq.perc('C'), seq.perc('T'), seq.perc('G')]
 
-                        add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  Percentage of G: {}%'.format(length, perc[0], perc[1], perc[2], perc[3])
-                        info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
+                        add = 'Length: {}\n  Percentage of A: {}%\n  Percentage of C: {}%\n  Percentage of T: {}%\n  Percentage of G: {}%'.format(
+                            length, perc[0], perc[1], perc[2], perc[3])
+                        info_dict.update([('length', length), ('perc_A', perc[0] + '%'), ('perc_C', perc[1] + '%'),
+                                          ("perc_T", perc[2] + '%'), ("perc_G", perc[3] + '%')])
 
                         title = 'Gene {} calc'.format(gene)
                         h = 'Calculations performed on gene {}'.format(gene)
@@ -292,6 +303,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
 
         self.wfile.write(str.encode(content))
+
 
 Handler = TestHandler
 
