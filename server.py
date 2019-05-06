@@ -205,7 +205,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
 
                     elif end == 'geneInfo':
                         a = decoded2['desc'].split(':')
-                        chromo, start, end, ID, length = a[2], a[3], a[4], decoded2['id'], decoded2['id']
+                        print(decoded2)
+                        chromo, start, end, ID, length = a[2], a[3], a[4], decoded2['id'], len(decoded2['seq'])
 
                         add = "Start: {}\nEnd:{}\nLength: {}\nid: {}\nChromosome: {}".format(start, end, length, ID,
                                                                                              chromo)
