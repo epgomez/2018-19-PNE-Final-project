@@ -1,0 +1,97 @@
+http://localhost:8000/listSpecies?limit=
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: ficedula_albicollis
+Common name: Collared flycatcher
+
+Scientific name: castor_canadensis
+Common name: American beaver
+
+        (...)
+
+Scientific name: myotis_lucifugus
+Common name: little brown bat
+
+</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/listSpecies
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: mus_musculus
+Common name: house mouse
+
+Scientific name: homo_sapiens
+Common name: human
+        (...)
+
+Scientific name: mus_musculus_akrj
+Common name: house mouse
+
+</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/listSpecies?limit=7
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre>Scientific name: ficedula_albicollis
+Common name: Collared flycatcher
+
+Scientific name: castor_canadensis
+Common name: American beaver
+
+Scientific name: ciona_intestinalis
+Common name: Sea squirt Ciona intestinalis
+
+Scientific name: pogona_vitticeps
+Common name: central bearded dragon
+
+Scientific name: manacus_vitellinus
+Common name: golden-collared manakin
+
+Scientific name: mus_spicilegus
+Common name: steppe mouse
+
+Scientific name: zonotrichia_albicollis
+Common name: white-throated sparrow
+
+</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/listSpecies?limit=3333
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Species list</title></head><body><h3>List of all the available species</h3><a href="/">Main page</a><pre><pre style = "color: red">CAREFUL! The maximum length is 199!</pre>(We are showing the maximum number of species possible)
+
+Scientific name: ficedula_albicollis
+Common name: Collared flycatcher
+
+Scientific name: castor_canadensis
+        (...)
+
+Scientific name: myotis_lucifugus
+Common name: little brown bat
+
+</pre><a href="/">Main page</a></body></html>
+
+
+http://localhost:8000/karyotype?specie=human
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of human</h3><a href="/">Main page</a><pre>Chromosome number 1: 1
+Chromosome number 2: 2
+Chromosome number 3: 3
+Chromosome number 4: 4
+        (...)
+Chromosome number 22: 22
+Chromosome number 23: X
+Chromosome number 24: Y
+</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/karyotype?specie=mouse
+    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of mouse</h3><a href="/">Main page</a><pre>Chromosome number 1: 1
+Chromosome number 2: 2
+Chromosome number 3: 3
+        (...)
+Chromosome number 20: X
+Chromosome number 21: Y
+</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/karyotype?specie=blabla
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Karyotype</title></head><body><h3>Karyotype of blabla</h3><a href="/">Main page</a><pre>Can not find internal name for species "blabla"</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=X
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome length</title></head><body><h3>Length of chromosome X of species human</h3><a href="/">Main page</a><pre>156040895</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/chromosomeLength?specie=human&chromo=q
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome length</title></head><body><h3>Length of chromosome q of species human</h3><a href="/">Main page</a><pre>Can not find chromosome "q" of species "human"</pre><a href="/">Main page</a></body></html>
+
+http://localhost:8000/chromosomeLength?specie=fail&chromo=X
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Chromosome length</title></head><body><h3>Length of chromosome X of species fail</h3><a href="/">Main page</a><pre>Can not find chromosome "X" of species "fail"</pre><a href="/">Main page</a></body></html>
