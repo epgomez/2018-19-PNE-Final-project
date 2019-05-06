@@ -1,89 +1,58 @@
-<!DOCTYPE html>
-<head>
-    <meta charset="UTF-8">
-    <title>Genome info</title>
-    <style>
-        table, th, td {
-        background-color: ;
-        font-family: monospace;
-        font-size: 12px
-        }
-        form, h1, h3, h4, h5 {
-        color: white
-        }
-        li {
-        font-size: 18px;
-        color: white
-        }
-    </style>
-</head>
-<body style="background-color: #0000e6 ">
-<h5>Final project PNE  -  Eloy Perez Gomez</h5>
-<h1 style="text-align: center">Genomic information</h1>
-<h3>Page dedicated to the acquisition of information about the human and other vertebrates genome</h3>
-<h4>Options:</h4>
-<ul>
-
-    <li>List of all the availables species on the database</li>
-    <form action="listSpecies" method="get">
-     You can restrict the length of the list:  <input type="number" name="limit" min="0" max="199">
-        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>Information about the karyotype of a species</li>
-    <form action="karyotype" method="get">
-        Species desired:  <input type="text" name="specie">
-             <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>Length of a specific chromosome</li>
-        <form action="chromosomeLength" method="get">
-            <br>Species and chromosome desired:</br>
-        Species:<input type="text" name="specie">
-        Chromosome: <input type="text" name="chromo">
-            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>Sequence of a human gene</li>
-    <form action="geneSeq" method="get">
-        Gene name: <input type="text" name="gene">
-        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>Information about a human gene</li>
-    <form action="geneInfo" method="get">
-        Gene name: <input type="text" name="gene">
-        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>Calculations on a human gene</li>
-    <form action="geneCalc" method="get">
-        Gene name: <input type="text" name="gene">
-        <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-    <p></p>
-    <li>List of the genes of a specific region of the human genome</li>
-        <form action="geneList" method="get">
-        Chromosome: <input type="text" name="chromo">
-        Start point: <input type="number" name="start">
-        End point: <input type="number" name="end">
-            <table><tr><td>click if you want the response in .json format <input type="checkbox" name="json" value="1"></td></tr></table>
-
-    <input type="submit"/>
-    </form>
-</ul>
-
-
-</body>
-</html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Gene list</title></head><body><h3>Gene list of chromosome X from 1 to 5000000</h3><a href="/">Main page</a><pre>Gene 0: AL954722.1
+Gene 1: PLCXD1
+Gene 2: GTPBP6
+Gene 3: LINC00685
+Gene 4: PPP2R3B
+Gene 5: AL732314.6
+Gene 6: RF00017
+Gene 7: AL732314.4
+Gene 8: FABP5P13
+Gene 9: KRT18P53
+Gene 10: SHOX
+Gene 11: AL672277.1
+Gene 12: RPL14P5
+Gene 13: CRLF2
+Gene 14: CSF2RA
+Gene 15: MIR3690
+Gene 16: RNA5SP498
+Gene 17: IL3RA
+Gene 18: SLC25A6
+Gene 19: LINC00106
+Gene 20: ASMTL-AS1
+Gene 21: ASMTL
+Gene 22: P2RY8
+Gene 23: AKAP17A
+Gene 24: ASMT
+Gene 25: AL683807.1
+Gene 26: AL683807.2
+Gene 27: DHRSX
+Gene 28: DHRSX-IT1
+Gene 29: ZBED1
+Gene 30: MIR6089
+Gene 31: CD99P1
+Gene 32: LINC00102
+Gene 33: CD99
+Gene 34: XG
+Gene 35: GYG2
+Gene 36: GYG2-AS1
+Gene 37: ARSD
+Gene 38: ARSD-AS1
+Gene 39: ARSE
+Gene 40: ARSH
+Gene 41: ARSF
+Gene 42: RN7SL578P
+Gene 43: AC112653.1
+Gene 44: LINC01546
+Gene 45: MXRA5
+Gene 46: ASS1P4
+Gene 47: SNORA48B
+Gene 48: RNU6-114P
+Gene 49: PRKX
+Gene 50: RNU6-146P
+Gene 51: RF00019
+Gene 52: PRKX-AS1
+Gene 53: AC007685.1
+Gene 54: BX890604.2
+Gene 55: BX890604.1
+Gene 56: AC074035.1
+</pre><a href="/">Main page</a></body></html>
